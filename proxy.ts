@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest): NextResponse {
-  const nonce = btoa(crypto.randomUUID())
+export default function proxy(request: NextRequest): NextResponse {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
