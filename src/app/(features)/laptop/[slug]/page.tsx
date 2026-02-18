@@ -10,8 +10,9 @@ import { Laptop } from '@/types'
 export const revalidate = 60
 
 async function getLaptop(slug: string): Promise<Laptop | null> {
-    // In a real app, use absolute URL or env var
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
     try {
         const res = await fetch(`${baseUrl}/api/laptops/${slug}`, {

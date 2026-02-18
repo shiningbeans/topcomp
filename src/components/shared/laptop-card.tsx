@@ -99,7 +99,7 @@ export function LaptopCard({ product, isLoading, onCompareChange, isCompared }: 
             {/* Content */}
             <div className="flex flex-1 flex-col p-4">
                 <Link
-                    href={`/laptops/${product.slug}`}
+                    href={`/laptop/${product.slug}`}
                     className="group-hover:text-primary transition-colors"
                     aria-label={`View details for ${product.name}`}
                 >
@@ -137,7 +137,7 @@ export function LaptopCard({ product, isLoading, onCompareChange, isCompared }: 
                 {/* Actions */}
                 <div className="mt-4 pt-3 border-t border-border">
                     <Button asChild className="w-full">
-                        <Link href={`/laptops/${product.slug}`}>
+                        <Link href={`/laptop/${product.slug}`}>
                             View Details
                         </Link>
                     </Button>

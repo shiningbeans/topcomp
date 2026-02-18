@@ -76,55 +76,55 @@ export function FilterSidebar() {
 
                 <AccordionItem title="Brand">
                     <div className="space-y-2">
-                        <FilterCheckbox label="Apple" count={24} />
-                        <FilterCheckbox label="Lenovo" count={45} />
-                        <FilterCheckbox label="Dell" count={38} />
-                        <FilterCheckbox label="HP" count={32} />
-                        <FilterCheckbox label="ASUS" count={28} />
-                        <FilterCheckbox label="Acer" count={15} />
-                        <FilterCheckbox label="MSI" count={12} />
-                        <FilterCheckbox label="Razer" count={8} />
+                        <FilterCheckbox label="Apple" />
+                        <FilterCheckbox label="Lenovo" />
+                        <FilterCheckbox label="Dell" />
+                        <FilterCheckbox label="HP" />
+                        <FilterCheckbox label="ASUS" />
+                        <FilterCheckbox label="Acer" />
+                        <FilterCheckbox label="MSI" />
+                        <FilterCheckbox label="Razer" />
                     </div>
                 </AccordionItem>
 
                 <AccordionItem title="Processor">
                     <div className="space-y-2">
-                        <FilterCheckbox label="Apple M3" count={12} />
-                        <FilterCheckbox label="Apple M3 Pro" count={8} />
-                        <FilterCheckbox label="Apple M3 Max" count={4} />
-                        <FilterCheckbox label="Intel Core i9" count={25} />
-                        <FilterCheckbox label="Intel Core i7" count={42} />
-                        <FilterCheckbox label="Intel Core i5" count={30} />
-                        <FilterCheckbox label="AMD Ryzen 9" count={10} />
-                        <FilterCheckbox label="AMD Ryzen 7" count={18} />
+                        <FilterCheckbox label="Apple M3" />
+                        <FilterCheckbox label="Apple M3 Pro" />
+                        <FilterCheckbox label="Apple M3 Max" />
+                        <FilterCheckbox label="Intel Core i9" />
+                        <FilterCheckbox label="Intel Core i7" />
+                        <FilterCheckbox label="Intel Core i5" />
+                        <FilterCheckbox label="AMD Ryzen 9" />
+                        <FilterCheckbox label="AMD Ryzen 7" />
                     </div>
                 </AccordionItem>
 
                 <AccordionItem title="RAM" defaultOpen={false}>
                     <div className="space-y-2">
-                        <FilterCheckbox label="8 GB" count={20} />
-                        <FilterCheckbox label="16 GB" count={85} />
-                        <FilterCheckbox label="32 GB" count={45} />
-                        <FilterCheckbox label="64 GB+" count={15} />
+                        <FilterCheckbox label="8 GB" />
+                        <FilterCheckbox label="16 GB" />
+                        <FilterCheckbox label="32 GB" />
+                        <FilterCheckbox label="64 GB+" />
                     </div>
                 </AccordionItem>
 
                 <AccordionItem title="Storage" defaultOpen={false}>
                     <div className="space-y-2">
-                        <FilterCheckbox label="256 GB" count={20} />
-                        <FilterCheckbox label="512 GB" count={90} />
-                        <FilterCheckbox label="1 TB" count={45} />
-                        <FilterCheckbox label="2 TB+" count={10} />
+                        <FilterCheckbox label="256 GB" />
+                        <FilterCheckbox label="512 GB" />
+                        <FilterCheckbox label="1 TB" />
+                        <FilterCheckbox label="2 TB+" />
                     </div>
                 </AccordionItem>
 
                 <AccordionItem title="Screen Size" defaultOpen={false}>
                     <div className="space-y-2">
-                        <FilterCheckbox label="13-inch" count={25} />
-                        <FilterCheckbox label="14-inch" count={40} />
-                        <FilterCheckbox label="15-inch" count={15} />
-                        <FilterCheckbox label="16-inch" count={50} />
-                        <FilterCheckbox label="17-inch+" count={10} />
+                        <FilterCheckbox label="13-inch" />
+                        <FilterCheckbox label="14-inch" />
+                        <FilterCheckbox label="15-inch" />
+                        <FilterCheckbox label="16-inch" />
+                        <FilterCheckbox label="17-inch+" />
                     </div>
                 </AccordionItem>
             </div>
