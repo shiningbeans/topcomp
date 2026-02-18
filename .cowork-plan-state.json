@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "command": "ag-plan",
+    "startedAt": "2026-02-17T00:00:00Z",
+    "lastUpdated": "2026-02-18T00:00:00Z",
+    "currentPhase": 7,
+    "appName": "topcomp",
+    "status": "plan-complete"
+  },
+  "vision": {
+    "problem": "Finding the true lowest price on a specific laptop configuration is broken. Google Shopping mixes in ads and misses deals, spec filtering is unreliable across retailers, and users end up manually checking 5-10 retailer tabs.",
+    "targetUser": "Tech-savvy deal hunters, college students on a budget, and small business owners buying 1-2 machines. Know what specs matter but site should be approachable for less technical users.",
+    "hook": "Broader coverage than gaming-only sites (work, gaming, Apple), tracks more retailers than Google Shopping, and zero ads in results. Clean, honest price comparisons.",
+    "outOfScope": ["User accounts / login / sign-up", "Price drop alerts / notifications", "Native mobile app", "Desktop PCs (v1 is laptops only)"]
+  },
+  "features": [
+    { "name": "Category browsing", "priority": "P0", "description": "Work, Gaming, Apple sections with persistent nav tabs" },
+    { "name": "Spec filtering", "priority": "P0", "description": "CPU, GPU (with specific model search like RTX 5080Ti), RAM, storage, screen size, resolution, refresh rate, weight, display type, battery life, touchscreen, OS" },
+    { "name": "Brand filtering", "priority": "P0", "description": "Dell, Lenovo, HP, ASUS, Acer, MSI, Apple, Razer, Samsung, LG, etc." },
+    { "name": "Sorting", "priority": "P0", "description": "Price low-to-high, price high-to-low, biggest discount %, best reviewed, newest" },
+    { "name": "Search bar", "priority": "P0", "description": "Always visible in top right. Text search by laptop name, model number, keyword, or minimum spec requirements. Typeahead suggestions." },
+    { "name": "Laptop card display", "priority": "P0", "description": "Key specs, image, top 3 lowest prices with retailer names, deal rating badge (Great Price/Fair Price/Above Average)" },
+    { "name": "Laptop detail page", "priority": "P0", "description": "Full specs, price from each tracked retailer with 'Buy at [Retailer] — $[price]' rows, external review score, buy links" },
+    { "name": "Price range filter", "priority": "P1", "description": "Min/max slider for price filtering" },
+    { "name": "Top Deals section", "priority": "P1", "description": "Ranked by price drop percentage" },
+    { "name": "Budget Friendly section", "priority": "P1", "description": "Best specs-to-price ratio picks" },
+    { "name": "Best Laptops section", "priority": "P1", "description": "Aggregated review scores from external sources" },
+    { "name": "Side-by-side comparison", "priority": "P1", "description": "Compare checkbox on cards, sticky bottom tray 'Compare (2 of 3)', up to 3 laptops, 'Compare Now' button, 'Clear all'" }
+  ],
+  "visual": {
+    "feel": "Fast, minimal, attention-holding",
+    "primaryColor": "#7C3AED (warm violet/purple, Figma-inspired)",
+    "dealAccents": { "great": "#22C55E", "fair": "#F59E0B", "aboveAverage": "#EF4444" },
+    "typography": { "main": "Inter (geometric, UI)", "technical": "JetBrains Mono (specs, prices, model numbers)" },
+    "references": ["CarGurus (interactive hero, deal badges)", "Figma (color palette)", "Financial Times (info hierarchy)"],
+    "layout": "Dense but not cramped, left sidebar filters, card grid",
+    "mode": "Light mode default, no dark mode in v1",
+    "hero": "CarGurus-style interactive selector on landing page"
+  },
+  "copy": {
+    "voice": "Friendly expert / deal hunter",
+    "appName": "TopComp",
+    "tagline": "Top computers. Clear comparisons. Lowest prices.",
+    "hero": "Every laptop. Every retailer. Side by side.",
+    "nav": ["Work", "Gaming", "Apple", "Top Deals", "Budget Picks", "Best Rated"],
+    "cardCTAs": ["View Details", "Compare (checkbox)"],
+    "detailCTA": "Buy at [Retailer] — $[price]",
+    "emptyState": "No laptops match your filters. Try broadening your search.",
+    "errorState": "Something went wrong. We're on it — try refreshing in a moment.",
+    "comparisonTray": "Compare (X of 3) | Compare Now | Clear all"
+  },
+  "data": {
+    "entities": ["Laptop", "Price", "PriceHistory", "SearchSuggestion"],
+    "auth": "none",
+    "database": "Prisma v7 + PostgreSQL via @prisma/adapter-pg",
+    "newLaptopFields": ["displayType", "touchscreen", "cpuModel", "gpuModel", "ramType", "storageInterface", "dealRating", "lowestPrice", "lowestRetailer"],
+    "removedFromEnum": "DESKTOP removed from Category",
+    "thirdParty": [
+      { "name": "Best Buy API", "purpose": "Product catalog + prices", "cost": "Free (affiliate)", "rateLimit": "5 req/sec", "tier": "api" },
+      { "name": "Amazon PA-API", "purpose": "Prices + product data", "cost": "Free (w/ affiliate)", "rateLimit": "1 req/sec", "tier": "api" },
+      { "name": "Walmart Affiliate API", "purpose": "Prices + product data", "cost": "Free (w/ approval)", "rateLimit": "20 req/sec", "tier": "api" },
+      { "name": "eBay Browse API", "purpose": "New laptop listings + prices", "cost": "Free (developer program)", "rateLimit": "5000/day", "tier": "api" },
+      { "name": "Custom scraper - Major retailers", "purpose": "Newegg, B&H Photo, Micro Center, Adorama", "cost": "Self-hosted", "rateLimit": "1 req/2sec", "tier": "scraper" },
+      { "name": "Custom scraper - Manufacturer stores", "purpose": "Lenovo.com, Dell.com, HP.com, Apple.com", "cost": "Self-hosted", "rateLimit": "1 req/2sec", "tier": "scraper" },
+      { "name": "Custom scraper - Warehouse/general", "purpose": "Costco, Sam's Club, Target, Office Depot, Staples", "cost": "Self-hosted", "rateLimit": "1 req/2sec", "tier": "scraper" },
+      { "name": "Gemini API", "purpose": "Normalize scraped specs", "cost": "Free tier", "rateLimit": "15 req/min", "tier": "service" },
+      { "name": "Vercel Blob", "purpose": "Product images", "cost": "Included in Vercel plan", "tier": "service" }
+    ],
+    "refreshCycle": "30 minutes",
+    "imageHosting": "Vercel Blob"
+  },
+  "api": {
+    "public": [
+      "GET /api/laptops — List + filter + search + sort",
+      "GET /api/laptops/[slug] — Full detail with all retailer prices",
+      "GET /api/deals — Top deals by discount %",
+      "GET /api/budget-picks — Best value (specs-to-price ratio)",
+      "GET /api/best-rated — Highest review scores",
+      "GET /api/filters — Dynamic filter values for UI",
+      "GET /api/search/suggestions — Typeahead autocomplete"
+    ],
+    "cron": [
+      "POST /api/cron/refresh-prices — Fetch prices from all retailers (every 30 min)",
+      "POST /api/cron/compute-deals — Recalculate deal ratings + denormalized fields"
+    ],
+    "security": "CRON_SECRET header for cron endpoints, rate limiting 100 req/min per IP",
+    "caching": "List endpoints 60s, detail pages 30s via Cache-Control + Vercel edge"
+  },
+  "edgeCases": {
+    "data": [
+      "Laptop with 0 prices → Show 'Currently unavailable'",
+      "Retailer API down → Skip retailer, keep stale prices, log failure",
+      "Price $0 or negative → Reject during ingestion",
+      "Duplicate laptops → Match by manufacturer + model, Gemini normalizes names",
+      "Stale price >2 hours → Warning badge 'Price may be outdated'"
+    ],
+    "ui": [
+      "No filter results → 'No laptops match your filters' + Clear all button",
+      "No search results → Suggest categories",
+      "Slow response → Skeleton loading cards (6 cards)",
+      "Image load failure → Generic laptop silhouette SVG with brand",
+      "Long laptop name → 2-line truncation on cards, full on detail"
+    ],
+    "comparison": [
+      "1 laptop → Disable Compare Now, 'Add at least 2'",
+      "3 laptops (max) → Disable further checkboxes",
+      "Navigate away → Preserve state in URL params"
+    ]
+  }
+}

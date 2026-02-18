@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Core laptop data
+model Laptop {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  brand         String
+  model         String
+  category      Category
+  imageUrl      String?
+
+  // Specs — general
+  cpu              String
+  cpuBrand         String      // Intel, AMD, Apple
+  cpuModel         String?     // e.g., "Core i7-13700H", "M3 Pro"
+  gpu              String?
+  gpuBrand         String?     // NVIDIA, AMD, Intel, Apple
+  gpuModel         String?     // e.g., "RTX 4070", "Radeon RX 7600M"
+  ramGb            Int
+  ramType          String?     // DDR4, DDR5, LPDDR5
+  storageGb        Int
+  storageType      String      // SSD, HDD
+  storageInterface String?     // NVMe, SATA
+
+  // Specs — display
+  screenSize    Float       // inches
+  screenRes     String      // e.g., "1920x1080"
+  displayType   String?     // IPS, OLED, TN, Mini-LED
+  refreshRate   Int?        // Hz
+  touchscreen   Boolean     @default(false)
+
+  // Specs — physical
+  weightLbs     Float?
+  batteryHours  Float?
+  os            String?
+
+  // Review aggregation
+  reviewScore   Float?      // normalized 0-100
+  reviewCount   Int         @default(0)
+  reviewSummary String?
+
+  // Deal & price denormalization (updated by cron/compute-deals)
+  dealRating     DealRating?
+  lowestPrice    Float?
+  lowestRetailer String?
+
+  // Metadata
+  releaseDate   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  prices        Price[]
+
+  @@index([brand])
+  @@index([category])
+  @@index([cpuBrand])
+  @@index([gpuBrand])
+  @@index([ramGb])
+  @@index([reviewScore])
+  @@index([lowestPrice])
+  @@index([dealRating])
+  @@index([slug])
+}
+
+model Price {
+  id            String   @id @default(cuid())
+  laptopId      String
+  retailer      String   // Amazon, Best Buy, Newegg, etc.
+  retailerUrl   String   // Direct buy link
+  price         Float    // Current price in USD
+  originalPrice Float?   // MSRP or previous price
+  discountPct   Float?   // Calculated discount percentage
+  inStock       Boolean  @default(true)
+  lastChecked   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  laptop        Laptop   @relation(fields: [laptopId], references: [id], onDelete: Cascade)
+
+  @@unique([laptopId, retailer])
+  @@index([retailer])
+  @@index([price])
+  @@index([discountPct])
+  @@index([lastChecked])
+}
+
+model PriceHistory {
+  id         String   @id @default(cuid())
+  laptopSlug String
+  retailer   String
+  price      Float
+  recordedAt DateTime @default(now())
+
+  @@index([laptopSlug, retailer])
+  @@index([recordedAt])
+}
+
+// Search autocomplete suggestions
+model SearchSuggestion {
+  id       String @id @default(cuid())
+  text     String // Display text: "MacBook Pro 14\" M3 Pro"
+  type     String // "laptop", "brand", "spec"
+  slug     String? // For laptop type: links to laptop detail page
+  url      String? // For brand/spec type: links to filtered results
+  priority Int    @default(0) // Higher = shown first
+
+  @@index([text])
+  @@index([type])
+  @@index([priority])
+}
+
+enum Category {
+  WORK
+  GAMING
+  APPLE
+}
+
+enum DealRating {
+  GREAT          // ≥15% below median price
+  FAIR           // within 15% of median price
+  ABOVE_AVERAGE  // >15% above median price
+}
