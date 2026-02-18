@@ -9,20 +9,32 @@ Give each agent their task file as the opening prompt.
 
 ## Dispatch All at Once
 
+For each agent below, open a new workspace and paste the **one-liner prompt**. The agent will read its full task file and brain files automatically.
+
+---
+
 **Agent 1 — Foundation**
-Open a new agent workspace. Paste the contents of `AGENT-1-foundation.md`.
+```
+Read and execute .gemini/antigravity/brain/agents/AGENT-1-foundation.md — then read every file in .gemini/antigravity/brain/ for context. Follow the build order exactly.
+```
 Builds: design system, layout, header/footer, shared components (laptop card, deal badge, price display, comparison tray, skeletons, empty states), homepage.
 
 **Agent 2 — API + Data**
-Open a second agent workspace. Paste the contents of `AGENT-2-api.md`.
+```
+Read and execute .gemini/antigravity/brain/agents/AGENT-2-api.md — then read every file in .gemini/antigravity/brain/ for context. Follow the build order exactly.
+```
 Builds: all API routes, retailer adapters (16 sources), cron pipeline, Gemini spec normalizer, deal rating computation, seed data.
 
 **Agent 3 — Features A (Core Browsing)**
-Open a third agent workspace. Paste the contents of `AGENT-3-features-a.md`.
+```
+Read and execute .gemini/antigravity/brain/agents/AGENT-3-features-a.md — then read every file in .gemini/antigravity/brain/ for context. Follow the build order exactly.
+```
 Builds: category pages (Work/Gaming/Apple), spec & brand filtering, sorting, search with typeahead.
 
 **Agent 4 — Features B (Deals, Detail, Comparison)**
-Open a fourth workspace. Paste the contents of `AGENT-4-features-b.md`.
+```
+Read and execute .gemini/antigravity/brain/agents/AGENT-4-features-b.md — then read every file in .gemini/antigravity/brain/ for context. Follow the build order exactly.
+```
 Builds: laptop detail page, Top Deals, Budget Picks, Best Rated, side-by-side comparison.
 
 All agents start simultaneously. No waiting between them.

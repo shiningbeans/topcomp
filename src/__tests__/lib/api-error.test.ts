@@ -1,34 +1,56 @@
-import { describe, it, expect } from 'vitest'
-import { ApiError, handleApiError } from '@/lib/api-error'
+import { describe, it, expect, vi } from 'vitest';
+import { ApiError, withErrorHandler } from '@/lib/api-error';
+import { NextRequest, NextResponse } from 'next/server';
 
 describe('ApiError', () => {
-  it('creates a not found error with correct status', () => {
-    const error = ApiError.notFound('User not found')
-    expect(error.status).toBe(404)
-    expect(error.code).toBe('NOT_FOUND')
-    expect(error.message).toBe('User not found')
-  })
+  it('creates error with correct properties', () => {
+    const error = new ApiError('VALIDATION_ERROR', 'Test message', { field: 'test' }, 422);
+    expect(error.code).toBe('VALIDATION_ERROR');
+    expect(error.message).toBe('Test message');
+    expect(error.details).toEqual({ field: 'test' });
+    expect(error.status).toBe(422);
+  });
 
-  it('creates unauthorized error with defaults', () => {
-    const error = ApiError.unauthorized()
-    expect(error.status).toBe(401)
-    expect(error.code).toBe('UNAUTHORIZED')
-    expect(error.message).toBe('Unauthorized')
-  })
+  it('static methods create correct errors', () => {
+    const notFound = ApiError.notFound();
+    expect(notFound.status).toBe(404);
+    expect(notFound.code).toBe('NOT_FOUND');
 
-  it('handleApiError returns JSON response for ApiError', async () => {
-    const error = ApiError.unauthorized()
-    const response = handleApiError(error)
-    const body = await response.json()
-    expect(response.status).toBe(401)
-    expect(body.error.code).toBe('UNAUTHORIZED')
-  })
+    const validation = ApiError.validation();
+    expect(validation.status).toBe(422);
+    expect(validation.code).toBe('VALIDATION_ERROR');
+  });
 
-  it('handleApiError returns 500 for unknown errors', async () => {
-    const error = new Error('something broke')
-    const response = handleApiError(error)
-    const body = await response.json()
-    expect(response.status).toBe(500)
-    expect(body.error.code).toBe('INTERNAL_ERROR')
-  })
-})
+  describe('withErrorHandler', () => {
+    it('returns JSON response for ApiError', async () => {
+      const handler = withErrorHandler(async () => {
+        throw new ApiError('VALIDATION_ERROR', 'Validation failed', undefined, 422);
+      });
+
+      const req = new NextRequest('http://localhost');
+      const res = await handler(req);
+      const json = await res.json();
+
+      expect(res.status).toBe(422);
+      expect(json).toEqual({
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Validation failed',
+        },
+      });
+    });
+
+    it('returns 500 for unknown errors', async () => {
+      const handler = withErrorHandler(async () => {
+        throw new Error('Boom');
+      });
+
+      const req = new NextRequest('http://localhost');
+      const res = await handler(req);
+      const json = await res.json();
+
+      expect(res.status).toBe(500);
+      expect(json.error.code).toBe('INTERNAL_ERROR');
+    });
+  });
+});

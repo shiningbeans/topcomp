@@ -1,65 +1,138 @@
-import Image from "next/image";
+import { Shell } from "@/components/layout/shell";
+import { LaptopCard, type LaptopProduct } from "@/components/shared/laptop-card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'TopComp — Compare Laptop Prices Across Every Retailer',
+  description: 'Compare laptop prices from 16+ retailers. Real-time deal tracking, spec comparison, and budget picks.',
+};
+
+// Mock Data for UI Foundation
+const MOCK_LAPTOPS: LaptopProduct[] = [
+  {
+    id: "1",
+    name: "MacBook Pro 14 M3 Pro",
+    slug: "macbook-pro-14-m3-pro",
+    specs: { cpu: "Apple M3 Pro", ram: "18 GB", storage: "512 GB", screen: "14.2 Liquid Retina XDR" },
+    prices: [{ retailer: "Amazon", price: 1799.00 }, { retailer: "Best Buy", price: 1849.00 }, { retailer: "Apple", price: 1999.00 }],
+    dealRating: "GREAT",
+    discountPct: 10
+  },
+  {
+    id: "2",
+    name: "Lenovo ThinkPad X1 Carbon Gen 11",
+    slug: "lenovo-thinkpad-x1-carbon",
+    specs: { cpu: "Intel Core i7-1355U", ram: "16 GB", storage: "512 GB SSD", screen: "14 IPS" },
+    prices: [{ retailer: "Lenovo", price: 1399.00 }, { retailer: "Amazon", price: 1450.00 }],
+    dealRating: "FAIR",
+    discountPct: 5
+  },
+  {
+    id: "3",
+    name: "Dell XPS 15 9530",
+    slug: "dell-xps-15",
+    specs: { cpu: "Intel Core i9-13900H", ram: "32 GB", storage: "1 TB SSD", screen: "15.6 OLED" },
+    prices: [{ retailer: "Dell", price: 2199.00 }, { retailer: "Best Buy", price: 2299.00 }],
+    dealRating: "ABOVE_AVERAGE",
+  },
+  {
+    id: "4",
+    name: "ASUS ROG Zephyrus G14",
+    slug: "asus-rog-zephyrus-g14",
+    specs: { cpu: "AMD Ryzen 9 7940HS", ram: "16 GB", storage: "1 TB SSD", screen: "14 QHD+ 165Hz" },
+    prices: [{ retailer: "Best Buy", price: 1099.99 }],
+    dealRating: "GREAT",
+    discountPct: 25
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-col min-h-screen">
+      <Shell>
+        {/* Hero Section */}
+        <section className="py-20 text-center space-y-8 max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
+            Every laptop. Every retailer. <br />
+            <span className="text-primary">Side by side.</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Button size="lg" className="h-12 px-8 text-lg" asChild>
+              <Link href="/deals">See Top Deals</Link>
+            </Button>
+            <Button size="lg" variant="outline" className="h-12 px-8 text-lg" asChild>
+              <Link href="/work">Browse Work Laptops</Link>
+            </Button>
+          </div>
+
+          {/* Interactive Selector Mock (Feature Agent will implement full logic) */}
+          <div className="mt-12 p-6 rounded-xl border border-border bg-card shadow-sm text-left max-w-3xl mx-auto">
+            <h3 className="text-lg font-medium mb-4">Quick Finder</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button variant="secondary" className="justify-start">Gaming Laptops</Button>
+              <Button variant="secondary" className="justify-start">Under $500</Button>
+              <Button variant="secondary" className="justify-start">Business</Button>
+              <Button variant="secondary" className="justify-start">Students</Button>
+              <Button variant="secondary" className="justify-start">MacBooks</Button>
+              <Button variant="secondary" className="justify-start">Touchscreen</Button>
+              <Button variant="secondary" className="justify-start">Long Battery</Button>
+              <Button variant="secondary" className="justify-start">Lightweight</Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Top Deals Section */}
+        <section className="py-12 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight">Top Deals Right Now</h2>
+            <Link href="/deals" className="text-primary hover:underline flex items-center gap-1">
+              View all <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {MOCK_LAPTOPS.map((laptop) => (
+              <LaptopCard key={laptop.id} product={laptop} />
+            ))}
+          </div>
+        </section>
+
+        {/* Best Value Section */}
+        <section className="py-12 space-y-6 border-t border-border">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight">Best Value Picks</h2>
+            <Link href="/budget" className="text-primary hover:underline flex items-center gap-1">
+              View all <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {MOCK_LAPTOPS.slice(0, 3).map((laptop) => (
+              <LaptopCard key={`value-${laptop.id}`} product={laptop} />
+            ))}
+            {/* Skeleton Example */}
+            <LaptopCard isLoading />
+          </div>
+        </section>
+
+        {/* Highest Rated Section */}
+        <section className="py-12 space-y-6 border-t border-border">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold tracking-tight">Highest Rated</h2>
+            <Link href="/best-rated" className="text-primary hover:underline flex items-center gap-1">
+              View all <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {MOCK_LAPTOPS.slice(1, 4).map((laptop) => (
+              <LaptopCard key={`rated-${laptop.id}`} product={laptop} />
+            ))}
+            <LaptopCard isLoading />
+          </div>
+        </section>
+      </Shell>
     </div>
   );
 }

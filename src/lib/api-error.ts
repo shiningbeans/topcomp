@@ -1,68 +1,86 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server';
+import { z } from 'zod';
+
+export type ApiErrorCode = 'VALIDATION_ERROR' | 'NOT_FOUND' | 'RATE_LIMITED' | 'INTERNAL_ERROR' | 'UNAUTHORIZED' | 'FORBIDDEN';
 
 export class ApiError extends Error {
-  public readonly status: number
-  public readonly code: string
-
-  constructor(message: string, status: number, code: string) {
-    super(message)
-    this.name = 'ApiError'
-    this.status = status
-    this.code = code
+  constructor(
+    public code: ApiErrorCode,
+    message: string,
+    public details?: Record<string, unknown>,
+    public status: number = 500
+  ) {
+    super(message);
+    this.name = 'ApiError';
   }
 
-  static badRequest(message = 'Bad request'): ApiError {
-    return new ApiError(message, 400, 'BAD_REQUEST')
+  static notFound(message = 'Resource not found', details?: Record<string, unknown>) {
+    return new ApiError('NOT_FOUND', message, details, 404);
   }
 
-  static unauthorized(message = 'Unauthorized'): ApiError {
-    return new ApiError(message, 401, 'UNAUTHORIZED')
+  static validation(message = 'Validation failed', details?: Record<string, unknown>) {
+    return new ApiError('VALIDATION_ERROR', message, details, 422);
   }
 
-  static forbidden(message = 'Forbidden'): ApiError {
-    return new ApiError(message, 403, 'FORBIDDEN')
+  static unauthorized(message = 'Unauthorized', details?: Record<string, unknown>) {
+    return new ApiError('UNAUTHORIZED', message, details, 401);
   }
 
-  static notFound(message = 'Not found'): ApiError {
-    return new ApiError(message, 404, 'NOT_FOUND')
+  static forbidden(message = 'Forbidden', details?: Record<string, unknown>) {
+    return new ApiError('FORBIDDEN', message, details, 403);
   }
 
-  static conflict(message = 'Conflict'): ApiError {
-    return new ApiError(message, 409, 'CONFLICT')
-  }
-
-  static tooManyRequests(message = 'Too many requests'): ApiError {
-    return new ApiError(message, 429, 'TOO_MANY_REQUESTS')
-  }
-
-  static internal(message = 'Internal server error'): ApiError {
-    return new ApiError(message, 500, 'INTERNAL_ERROR')
+  static internal(message = 'Internal server error', details?: Record<string, unknown>) {
+    return new ApiError('INTERNAL_ERROR', message, details, 500);
   }
 }
 
-export function handleApiError(error: unknown): NextResponse {
-  if (error instanceof ApiError) {
-    return NextResponse.json(
-      { error: { code: error.code, message: error.message } },
-      { status: error.status }
-    )
-  }
-
-  console.error('Unhandled error:', error)
-  return NextResponse.json(
-    { error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } },
-    { status: 500 }
-  )
-}
-
-type ApiHandler = (request: Request) => Promise<NextResponse>
+type ApiHandler<T = any> = (req: NextRequest, ...args: any[]) => Promise<NextResponse<T>>;
 
 export function withErrorHandler(handler: ApiHandler): ApiHandler {
-  return async (request: Request): Promise<NextResponse> => {
+  return async (req: NextRequest, ...args: any[]) => {
     try {
-      return await handler(request)
+      return await handler(req, ...args);
     } catch (error) {
-      return handleApiError(error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('API Error:', error);
+      }
+
+      if (error instanceof ApiError) {
+        return NextResponse.json(
+          {
+            error: {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+            },
+          },
+          { status: error.status }
+        );
+      }
+
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'VALIDATION_ERROR',
+              message: 'Invalid request data',
+              details: { issues: error.issues },
+            },
+          },
+          { status: 422 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'An unexpected error occurred',
+          },
+        },
+        { status: 500 }
+      );
     }
-  }
+  };
 }
